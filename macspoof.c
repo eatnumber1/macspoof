@@ -42,18 +42,22 @@ static config_t config_real;
 static config_t *config;
 static config_setting_t *app_config;
 
-static FILE *dfopen(const char *fn, const char *mode) {
-	FILE *file = fopen(fn, mode);
-	if (file == NULL) perror_die("fopen");
-	return file;
-}
-
 static FILE *open_config_file(char **filename) {
 	assert(filename != NULL);
 
-	*filename = getenv("MACSPOOF_CONFIG");
+	char *config = getenv("MACSPOOF_CONFIG");
+	if (config != NULL) {
+		*filename = "<none>";
+		FILE *file = fmemopen(config, strlen(config), "r");
+		if (file == NULL) perror_die("fmemopen");
+		return file;
+	}
+
+	*filename = getenv("MACSPOOF_CONFIG_FILE");
 	if (*filename != NULL) {
-		return dfopen(*filename, "r");
+		FILE *file = fopen(*filename, "r");
+		if (file == NULL) perror_die("fopen");
+		return file;
 	}
 
 	*filename = "~/.macspoofrc";

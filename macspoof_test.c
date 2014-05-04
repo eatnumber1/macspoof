@@ -114,7 +114,7 @@ static void get_mac(ioctl_fn *ioctl_f, char addr[static 6]) {
 }
 
 static void setup_environment(const char *config, const char *application) {
-	if (setenv("MACSPOOF_CONFIG", config, true) == -1) perror_die("setenv");
+	if (setenv("MACSPOOF_CONFIG_FILE", config, true) == -1) perror_die("setenv");
 	if (application != NULL) {
 		if (setenv("MACSPOOF_APPLICATION", application, true) == -1)
 			perror_die("setenv");

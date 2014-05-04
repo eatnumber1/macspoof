@@ -31,7 +31,9 @@ want to override. An interface name of `default_interface` will be used when an
 interface name is not found in the group.
 
 By default, the application will look for a config file in `~/.macspoofrc` and
-`/etc/macspoof.conf`. You can override this behavior with the `-c` option.
+`/etc/macspoof.conf`. You can override this behavior with the `-f` or the `-c`
+options. `-f` specifies a config file to read from, `-c` allows you to specify
+the config on the command line.
 
 ## Examples
 These examples are using the provided [macspoof.conf][macspoof-conf] file.
@@ -68,7 +70,7 @@ eth0:0    Link encap:Ethernet  HWaddr f2:c0:ff:96:ee:7f
 ```
 
 ```
-$ macspoof -c macspoof.conf -a ip ifconfig eth0
+$ macspoof -f macspoof.conf -a ip ifconfig eth0
 eth0      Link encap:Ethernet  HWaddr c0:ff:ee:96:d2:7f
     ...
 

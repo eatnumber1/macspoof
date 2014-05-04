@@ -2,19 +2,20 @@
 LD_PRELOAD="@MACSPOOF_LIB@"
 export LD_PRELOAD
 
-while getopts "ha:c:" arg; do
+while getopts "ha:c:f:" arg; do
 	case $arg in
 		h)
-			echo "Usage: $0 [-h] [-a application] [-c config] program arguments"
+			echo "Usage: $0 [-h] [-a application] [-c config] [-f config_file] program arguments"
 			exit 0
 			;;
 		a)
-			MACSPOOF_APPLICATION="$OPTARG"
-			export MACSPOOF_APPLICATION
+			export MACSPOOF_APPLICATION="$OPTARG"
 			;;
 		c)
-			MACSPOOF_CONFIG="$OPTARG"
-			export MACSPOOF_CONFIG
+			export MACSPOOF_CONFIG="$OPTARG"
+			;;
+		f)
+			export MACSPOOF_CONFIG_FILE="$OPTARG"
 			;;
 	esac
 done
