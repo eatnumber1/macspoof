@@ -9,7 +9,6 @@ ioctl:
 	movq %rsp, %rbp
 
 	# Save the argument registers
-	#pushq %rax
 	pushq %rbx
 	pushq %rcx
 	pushq %rdx
