@@ -32,7 +32,7 @@ ioctl:
 	# Call the resolver
 	callq ioctl_resolver@PLT
 
-	# rax now has the resolved pointer. Move it into rbx
+	# rax now has the resolved pointer. Move it into r11
 	movq %rax, %r11
 
 	# Restore the callee owned registers
