@@ -231,7 +231,7 @@ static void test_simple_array_config_partial_mac_suffix() {
 static void test_group_config() {
 	int test_mac[] = { 0xaa, 0xbb };
 	size_t test_mac_len = sizeof(test_mac) / sizeof(int);
-	char *config = mkconfig("default_application: { default_interface: [0xaa, 0xbb]; }");
+	char *config = mkconfig("default_application: { default_interface: [0xaa, 0xbb]; };");
 
 	setup_environment(config, NULL);
 	void *handle = load_macspoof();
