@@ -13,7 +13,7 @@ CFLAGS := -ggdb -fPIC -fvisibility=hidden
 ASFLAGS :=
 CPPFLAGS := -Wall -Werror -Wextra
 
-CFLAGS += -DMACSPOOF_CONFIGDIR="$(ETCDIR)"
+CFLAGS += -DMACSPOOF_ETCDIR="\"$(ETCDIR)\""
 CFLAGS += $(shell $(PKG_CONFIG) --cflags libconfig)
 LIBRARIES := -ldl $(shell $(PKG_CONFIG) --libs libconfig)
 
