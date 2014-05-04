@@ -56,6 +56,9 @@ guy :). Specifically though, the BSD family including OS X uses a completely
 different way of getting a MAC address, and I'd have to write all new ASM to
 support 32-bit Linux.
 
+# TODO
+Add support for overriding mac addresses on a per interface basis. Patches welcome.
+
 # Advanced
 
 ## How does it work?
