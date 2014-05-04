@@ -64,7 +64,7 @@ static char *mkconfig(const char *fmt, ...) {
 	return name;
 }
 
-static int open_interface() {
+static int open_socket() {
 	int sock;
 	if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
 		perror("socket");
@@ -93,12 +93,13 @@ static ioctl_fn *get_ioctl(void *handle) {
 }
 
 static void get_mac(ioctl_fn *ioctl_f, char addr[static 6]) {
-	int fd = open_interface();
+	int fd = open_socket();
 
 	struct ifreq ifs[64];
 	struct ifconf ifc;
 	ifc.ifc_len = sizeof(ifs);
 	ifc.ifc_req = ifs;
+	// This will call the real ioctl since this behavior isn't part of the test.
 	if (ioctl(fd, SIOCGIFCONF, &ifc) < 0) perror_die("ioctl");
 
 	for (struct ifreq *ifr = ifc.ifc_req; ifs + (ifc.ifc_len / sizeof(struct ifreq)); ifr++) {
