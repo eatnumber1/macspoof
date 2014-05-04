@@ -11,10 +11,6 @@
 
 #include <libconfig.h>
 
-#ifndef MACSPOOF_ETCDIR
-#define MACSPOOF_ETCDIR "/etc"
-#endif
-
 int (*real_ioctl)(int d, int request, ...);
 
 __attribute__((constructor)) static void setup_real_ioctl() {
@@ -103,7 +99,7 @@ static void read_app_config() {
 		int val = config_setting_get_int(elem);
 		if (config_setting_type(elem) != CONFIG_TYPE_INT || val > 0xFF || val < -1) {
 			fprintf(stderr, "macspoof: Config for application \"%s\" must be an array of "
-					"numbers in the range 0x00 - 0xFF.\n", app_name);
+					"numbers in the range -1 to 0xFF.\n", app_name);
 			exit(EXIT_FAILURE);
 		}
 	}
