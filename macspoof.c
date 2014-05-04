@@ -17,14 +17,25 @@
 
 int (*real_ioctl)(int d, int request, ...);
 
+__attribute__((noreturn)) static void die(const char *fmt, ...) {
+	va_list ap;
+	va_start(ap, fmt);
+	fprintf(stderr, "macspoof: ");
+	vfprintf(stderr, fmt, ap);
+	va_end(ap);
+	exit(EXIT_FAILURE);
+}
+
+__attribute__((noreturn)) static void perror_die(const char *s) {
+	char *msg = strerror(errno);
+	die("%s: %s\n", s, msg);
+}
+
 __attribute__((constructor)) static void setup_real_ioctl() {
 	dlerror();
 	real_ioctl = dlsym(RTLD_NEXT, "ioctl");
 	char *error = dlerror();
-	if (error != NULL) {
-		fprintf(stderr, "%s\n", error);
-		exit(EXIT_FAILURE);
-	}
+	if (error != NULL) die("%s\n", error);
 }
 
 static config_t config_real;
@@ -33,10 +44,7 @@ static config_setting_t *app_config;
 
 static FILE *dfopen(const char *fn, const char *mode) {
 	FILE *file = fopen(fn, mode);
-	if (file == NULL) {
-		perror("fopen");
-		exit(EXIT_FAILURE);
-	}
+	if (file == NULL) perror_die("fopen");
 	return file;
 }
 
@@ -56,8 +64,7 @@ static FILE *open_config_file(char **filename) {
 	file = fopen(*filename, "r");
 	if (file == NULL) {
 		perror("fopen");
-		fprintf(stderr, "macspoof: Cannot open any config file.\n");
-		exit(EXIT_FAILURE);
+		die("macspoof: Cannot open any config file.\n");
 	}
 	return file;
 }
@@ -66,29 +73,10 @@ static void read_config() {
 	char *filename = NULL;
 	FILE *file = open_config_file(&filename);
 
-	if (config_read(config, file) != CONFIG_TRUE) {
-		fprintf(
-			stderr,
-			"%s:%d %s\n",
-			filename,
-			config_error_line(config),
-			config_error_text(config)
-		);
-		exit(EXIT_FAILURE);
-	}
-	if (fclose(file) == EOF) {
-		perror("fclose");
-		exit(EXIT_FAILURE);
-	}
-}
+	if (config_read(config, file) != CONFIG_TRUE)
+		die("%s:%d %s\n", filename, config_error_line(config), config_error_text(config));
 
-__attribute__((noreturn)) static void die(const char *fmt, ...) {
-	va_list ap;
-	va_start(ap, fmt);
-	fprintf(stderr, "macspoof: ");
-	vfprintf(stderr, fmt, ap);
-	va_end(ap);
-	exit(EXIT_FAILURE);
+	if (fclose(file) == EOF) perror_die("fclose");
 }
 
 static void typecheck_config_array(config_setting_t *array) {
