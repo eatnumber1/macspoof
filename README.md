@@ -1,6 +1,8 @@
 Macspoof
 ========
 
+[![Build Status](https://travis-ci.org/eatnumber1/macspoof.svg?branch=master)](https://travis-ci.org/eatnumber1/macspoof)
+
 ## Introduction
 Macspoof is a tool to override your mac address on a per-application basis.
 
