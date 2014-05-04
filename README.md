@@ -19,7 +19,7 @@ how macspoof overrides MAC addresses. It allows you to override all or part of a
 mac address on a per-application and per-interface basis. You declare which
 applications will be overridden, and then when you run macspoof, you specify
 which application is running with the `-a` flag. If you do not specify the `-a`
-flag, the application named "default" will be used.
+flag, the application named `default_application` will be used.
 
 Each application's value must either be an array of integers or a group of
 arrays of integers whose values range from -1 to 255 (hex or decimal is
