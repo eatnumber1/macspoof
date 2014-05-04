@@ -21,11 +21,14 @@ and then when you run macspoof, you specify which application is running with
 the `-a` flag. If you do not specify the `-a` flag, the application named
 "default" will be used.
 
-Each application's value must be an array of integers whose values range from
--1 to 255 (hex or decimal is accepted). The values declared in the array will
-override the returned MAC address. The array does not have to cover all six of
-the octets in a mac address. You can also explicitly ignore an octet by using
-the value -1.
+Each application's value must either be an array of integers or a group of
+arrays of integers whose values range from -1 to 255 (hex or decimal is
+accepted). The values declared in the array will override the returned MAC
+address. The array does not have to cover all six of the octets in a mac
+address. You can also explicitly ignore an octet by using the value -1. If you
+use a group, the group's elements should be named by the interface names you
+want to override. An interface name of `default_interface` will be used when an
+interface name is not found in the group.
 
 By default, the application will look for a config file in `~/.macspoofrc` and
 `/etc/macspoof.conf`. You can override this behavior with the `-c` option.
@@ -33,19 +36,44 @@ By default, the application will look for a config file in `~/.macspoofrc` and
 ## Examples
 These examples are using the provided [macspoof.conf][macspoof-conf] file.
 
+If your machine's normal MAC addresses are:
+
 ```
-$ macspoof ifconfig eth0
-eth0      Link encap:Ethernet  HWaddr 00:01:42:96:d2:7f
+$ ifconfig
+eth0      Link encap:Ethernet  HWaddr f2:3c:91:96:d2:7f
+    ...
+
+eth0:0    Link encap:Ethernet  HWaddr f2:3c:91:96:d2:7f
+    ...
+```
+
+Then using macspoof, you get:
+
+```
+$ macspoof ifconfig
+eth0      Link encap:Ethernet  HWaddr de:ad:be:ef:d2:7f
+    ...
+
+eth0:0    Link encap:Ethernet  HWaddr de:ad:be:ef:d2:7f
+    ...
 ```
 
 ```
-$ macspoof ifconfig -a ifconfig ifconfig eth0
-eth0      Link encap:Ethernet  HWaddr de:ad:be:ef:d2:7f
+$ macspoof -a ifconfig ifconfig
+eth0      Link encap:Ethernet  HWaddr f2:c0:ff:96:ee:7f
+    ...
+
+eth0:0    Link encap:Ethernet  HWaddr f2:c0:ff:96:ee:7f
+    ...
 ```
 
 ```
 $ macspoof -c macspoof.conf -a ip ifconfig eth0
-eth0      Link encap:Ethernet  HWaddr f2:c0:ff:96:ee:7f
+eth0      Link encap:Ethernet  HWaddr c0:ff:ee:96:d2:7f
+    ...
+
+eth0:0    Link encap:Ethernet  HWaddr f2:3c:91:96:d2:7f
+    ...
 ```
 
 ## Why is my platform or architecture not supported?
@@ -55,9 +83,6 @@ If you ask, I'll probably implement it. Seriously. Ask. I'm a pretty friendly
 guy :). Specifically though, the BSD family including OS X uses a completely
 different way of getting a MAC address, and I'd have to write all new ASM to
 support 32-bit Linux.
-
-# TODO
-Add support for overriding mac addresses on a per interface basis. Patches welcome.
 
 # Advanced
 
