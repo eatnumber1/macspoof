@@ -1,4 +1,4 @@
 install: sudo apt-get install libconfig-dev
-script: make && clang -o macspoof_test $(pkg-config --libs --cflags glib-2.0) macspoof_test.c -ldl && ./macspoof_test
+script: make test
 language: c
 compiler: [clang]

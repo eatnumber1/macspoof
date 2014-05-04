@@ -142,11 +142,15 @@ __attribute__((destructor)) static void destroy_config() {
 // Unfortunately, config_setting_get_member returns eth0 when we asked for eth0:0.
 // That's probably a bug.
 static config_setting_t *config_setting_get_member_exact(const char *name) {
+	config_setting_t *default_if_conf = NULL;
 	for (int i = 0; i < config_setting_length(app_config); i++) {
 		config_setting_t *cur = config_setting_get_elem(app_config, i);
-		if (strcmp(config_setting_name(cur), name) == 0) return cur;
+		const char *if_conf_name = config_setting_name(cur);
+		if (strcmp(if_conf_name, name) == 0) return cur;
+		if (default_if_conf == NULL && strcmp(if_conf_name, "default_interface") == 0)
+			default_if_conf = cur;
 	}
-	return NULL;
+	return default_if_conf;
 }
 
 static config_setting_t *mac_array_for_if(const char *ifname) {

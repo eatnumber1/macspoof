@@ -256,7 +256,7 @@ int main(int argc, char **argv) {
 	g_test_add_func("/macspoof/config/simple_array/specific_app", test_simple_array_config_specific_application);
 	g_test_add_func("/macspoof/config/simple_array/partial_mac_prefix", test_simple_array_config_partial_mac_prefix);
 	g_test_add_func("/macspoof/config/simple_array/partial_mac_suffix", test_simple_array_config_partial_mac_suffix);
-	g_test_add_func("/macspoof/config/group", test_simple_array_config_partial_mac_suffix);
+	g_test_add_func("/macspoof/config/group", test_group_config);
 
 	return g_test_run();
 }
