@@ -72,6 +72,10 @@ static void read_config() {
 		);
 		exit(EXIT_FAILURE);
 	}
+	if (fclose(file) == EOF) {
+		perror("fclose");
+		exit(EXIT_FAILURE);
+	}
 }
 
 static void read_app_config() {
