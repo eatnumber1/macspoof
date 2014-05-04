@@ -1,8 +1,12 @@
 CC := clang
+PKG_CONFIG := pkg-config
+
 CFLAGS := -ggdb -fPIC -fvisibility=hidden
 ASFLAGS :=
 CPPFLAGS := -Wall -Werror -Wextra
-LIBRARIES := -ldl
+
+CFLAGS += $(shell $(PKG_CONFIG) --cflags libconfig)
+LIBRARIES := -ldl $(shell $(PKG_CONFIG) --libs libconfig)
 
 C_SOURCES := macspoof.c
 
