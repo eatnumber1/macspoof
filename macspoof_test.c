@@ -13,9 +13,6 @@
 
 #include <glib.h>
 
-#define TEST_INTERFACE "eth0"
-#define TEST_TIMEOUT_US 5000000
-
 __attribute__((noreturn)) static void die(const char *fmt, ...) {
 	va_list ap;
 	va_start(ap, fmt);
