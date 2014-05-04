@@ -14,7 +14,7 @@ applications ask your system for it's MAC address.
 Just `sudo make install`. It will install to `/usr/local`.
 
 ## Use
-Have a look at macspoof.conf. This file allows you to configure how macspoof
+Have a look at [macspoof.conf][macspoof-conf]. This file allows you to configure how macspoof
 overrides MAC addresses. It allows you to override all or part of a mac address
 on a per-application basis. You declare which applications will be overridden,
 and then when you run macspoof, you specify which application is running with
@@ -31,16 +31,16 @@ By default, the application will look for a config file in `~/.macspoofrc` and
 `/etc/macspoof.conf`. You can override this behavior with the `-c` option.
 
 ## Examples
-These examples are using the provided macspoof.conf file.
-
-```
-$ macspoof ifconfig -a ifconfig ifconfig eth0
-eth0      Link encap:Ethernet  HWaddr de:ad:be:ef:d2:7f
-```
+These examples are using the provided [macspoof.conf][macspoof-conf] file.
 
 ```
 $ macspoof ifconfig eth0
 eth0      Link encap:Ethernet  HWaddr 00:01:42:96:d2:7f
+```
+
+```
+$ macspoof ifconfig -a ifconfig ifconfig eth0
+eth0      Link encap:Ethernet  HWaddr de:ad:be:ef:d2:7f
 ```
 
 ```
@@ -91,6 +91,7 @@ otherwise it returns a pointer to the `ioctl_get_hwaddr` function which performs
 the overrides. By doing this we can know the exact number of arguments in
 `ioctl_get_hwaddr`. [FML][FML]
 
+[macspoof-conf]: https://github.com/eatnumber1/macspoof/blob/master/macspoof.conf
 [libconfig]: http://www.hyperrealm.com/libconfig/
 [FML]: http://www.fmylife.com/
 [dyld]: http://en.wikipedia.org/wiki/Dynamic_linking
