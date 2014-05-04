@@ -1,0 +1,23 @@
+#!/bin/bash
+LD_PRELOAD="@MACSPOOF_LIB@"
+export LD_PRELOAD
+
+while getopts "ha:c:" arg; do
+	case $arg in
+		h)
+			echo "Usage: $0 [-h] [-a application] [-c config] program arguments"
+			exit 0
+			;;
+		a)
+			MACSPOOF_APPLICATION="$OPTARG"
+			export MACSPOOF_APPLICATION
+			;;
+		c)
+			MACSPOOF_CONFIG="$OPTARG"
+			export MACSPOOF_CONFIG
+			;;
+	esac
+done
+shift $((OPTIND - 1))
+
+exec "$@"

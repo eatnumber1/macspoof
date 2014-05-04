@@ -11,6 +11,10 @@
 
 #include <libconfig.h>
 
+#ifndef MACSPOOF_ETCDIR
+#define MACSPOOF_ETCDIR "/etc"
+#endif
+
 int (*real_ioctl)(int d, int request, ...);
 
 __attribute__((constructor)) static void setup_real_ioctl() {
@@ -48,7 +52,7 @@ static FILE *open_config_file(char **filename) {
 	FILE *file = fopen(*filename, "r");
 	if (file != NULL) return file;
 
-	*filename = "/etc/macspoof.conf";
+	*filename = MACSPOOF_ETCDIR "/macspoof.conf";
 	file = fopen(*filename, "r");
 	if (file == NULL) {
 		perror("fopen");
@@ -97,7 +101,7 @@ static void read_app_config() {
 	for (int i = 0; i < length; i++) {
 		config_setting_t *elem = config_setting_get_elem(mac_array, i);
 		int val = config_setting_get_int(elem);
-		if (config_setting_type(elem) != CONFIG_TYPE_INT || val > 0xFF || val < 0) {
+		if (config_setting_type(elem) != CONFIG_TYPE_INT || val > 0xFF || val < -1) {
 			fprintf(stderr, "macspoof: Config for application \"%s\" must be an array of "
 					"numbers in the range 0x00 - 0xFF.\n", app_name);
 			exit(EXIT_FAILURE);
@@ -130,7 +134,8 @@ int ioctl_get_hwaddr(int d, int request, ...) {
 	}
 
 	for (int i = 0; i < config_setting_length(mac_array); i++) {
-		ifreq->ifr_hwaddr.sa_data[i] = config_setting_get_int_elem(mac_array, i);
+		int val = config_setting_get_int_elem(mac_array, i);
+		if (val != -1) ifreq->ifr_hwaddr.sa_data[i] = val;
 	}
 
 	return ret;
