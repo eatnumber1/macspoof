@@ -1,3 +1,4 @@
 *.so
 *.o
 macspoof
+macspoof_test

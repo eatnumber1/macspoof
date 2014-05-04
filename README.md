@@ -84,6 +84,16 @@ guy :). Specifically though, the BSD family including OS X uses a completely
 different way of getting a MAC address, and I'd have to write all new ASM to
 support 32-bit Linux.
 
+# Testing
+To run the tests, do the following:
+
+```
+$ clang -o macspoof_test $(pkg-config --libs --cflags glib-2.0) macspoof_test.c -ldl
+$ ./macspoof_test
+```
+
+Note that you must have glib installed.
+
 # Advanced
 
 ## How does it work?
