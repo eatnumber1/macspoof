@@ -150,7 +150,7 @@ static char *mkconfig_from_array(const char *application, int bytes[], size_t le
 	aryptr = strncat(aryptr, "]", 1) + 1;
 	assert(*aryptr == '\0');
 	assert(strlen(ary) + 1 <= arylen);
-	return mkconfig("%s: %s", application, ary);
+	return mkconfig("%s: %s;", application, ary);
 }
 
 static void assert_cmpary(int *expected, char *actual, size_t n) {
