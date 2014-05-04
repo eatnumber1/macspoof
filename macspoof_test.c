@@ -34,6 +34,7 @@ static void cleanup_tempfile(void *namevoid) {
 	assert(name != NULL);
 	if (unlink(name) == -1) {
 		perror("unlink");
+		_Exit(EXIT_FAILURE);
 	}
 	free(name);
 }
