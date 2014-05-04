@@ -14,12 +14,12 @@ applications ask your system for it's MAC address.
 Just `sudo make install`. It will install to `/usr/local`.
 
 ## Use
-Have a look at [macspoof.conf][macspoof-conf]. This file allows you to configure how macspoof
-overrides MAC addresses. It allows you to override all or part of a mac address
-on a per-application basis. You declare which applications will be overridden,
-and then when you run macspoof, you specify which application is running with
-the `-a` flag. If you do not specify the `-a` flag, the application named
-"default" will be used.
+Have a look at [macspoof.conf][macspoof-conf]. This file allows you to configure
+how macspoof overrides MAC addresses. It allows you to override all or part of a
+mac address on a per-application and per-interface basis. You declare which
+applications will be overridden, and then when you run macspoof, you specify
+which application is running with the `-a` flag. If you do not specify the `-a`
+flag, the application named "default" will be used.
 
 Each application's value must either be an array of integers or a group of
 arrays of integers whose values range from -1 to 255 (hex or decimal is
