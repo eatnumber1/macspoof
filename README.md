@@ -78,7 +78,7 @@ $ macspoof -f macspoof.conf -a ip ifconfig
 eth0      Link encap:Ethernet  HWaddr c0:ff:ee:96:d2:7f
     ...
 
-eth0:0    Link encap:Ethernet  HWaddr f2:3c:91:96:d2:7f
+eth0:0    Link encap:Ethernet  HWaddr 00:01:42:96:d2:7f
     ...
 ```
 
