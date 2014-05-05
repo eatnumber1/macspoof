@@ -98,12 +98,32 @@ static void typecheck_config_array(config_setting_t *array) {
 
 static void typecheck_config_ifgroup(config_setting_t *ifgroup) {
 	assert(config_setting_is_group(ifgroup));
-	for (int i = 0; i < config_setting_length(ifgroup); i++) {
-		config_setting_t *ary = config_setting_get_elem(ifgroup, i);
-		if (!config_setting_is_array(ary)) {
-			die("Interface groups must only contain arrays.\n");
-		}
-		typecheck_config_array(ary);
+	config_setting_t *dflt = config_setting_get_member(ifgroup, "default");
+	config_setting_t *mac = config_setting_get_member(ifgroup, "mac");
+	config_setting_t *interface = config_setting_get_member(ifgroup, "interface");
+
+	if (dflt == NULL && interface == NULL)
+		die("Interface group must contain either \"default\" or \"interface\" elements.\n");
+	if (dflt != NULL && interface != NULL)
+		die("Interface group must contain only one of \"default\" and \"interface\" elements.\n");
+	if (mac == NULL)
+		die("Interface group must contain a \"mac\" element.\n");
+	if (dflt != NULL && config_setting_type(dflt) != CONFIG_TYPE_BOOL)
+		die("Interface group element \"default\" must be a bool.\n");
+	if (interface != NULL && config_setting_type(interface) != CONFIG_TYPE_STRING)
+		die("Interface group element \"interface\" must be a string.\n");
+	if (!config_setting_is_array(mac))
+		die("Interface group element \"mac\" must be an array.\n");
+	typecheck_config_array(mac);
+}
+
+static void typecheck_config_ifgrouplist(config_setting_t *list) {
+	assert(config_setting_is_list(list));
+	for (int i = 0; i < config_setting_length(list); i++) {
+		config_setting_t *ifgroup = config_setting_get_elem(list, i);
+		if (!config_setting_is_group(ifgroup))
+			die("Interface group lists must only contain groups.\n");
+		typecheck_config_ifgroup(ifgroup);
 	}
 }
 
@@ -119,8 +139,8 @@ static void read_app_config() {
 		case CONFIG_TYPE_ARRAY:
 			typecheck_config_array(app_config);
 			break;
-		case CONFIG_TYPE_GROUP:
-			typecheck_config_ifgroup(app_config);
+		case CONFIG_TYPE_LIST:
+			typecheck_config_ifgrouplist(app_config);
 			break;
 		default:
 			die("Config for application \"%s\" must be an array or group.\n", app_name);
@@ -139,16 +159,28 @@ __attribute__((destructor)) static void destroy_config() {
 	if (config != NULL) config_destroy(config);
 }
 
-// Unfortunately, config_setting_get_member returns eth0 when we asked for eth0:0.
-// That's probably a bug.
-static config_setting_t *config_setting_get_member_exact(const char *name) {
+static config_setting_t *interface_group_for(const char *ifname) {
+	assert(config_setting_is_list(app_config));
+
 	config_setting_t *default_if_conf = NULL;
 	for (int i = 0; i < config_setting_length(app_config); i++) {
 		config_setting_t *cur = config_setting_get_elem(app_config, i);
-		const char *if_conf_name = config_setting_name(cur);
-		if (strcmp(if_conf_name, name) == 0) return cur;
-		if (default_if_conf == NULL && strcmp(if_conf_name, "default_interface") == 0)
+
+		config_setting_t *cur_ifname = config_setting_get_member(cur, "interface");
+		if (cur_ifname != NULL) {
+			const char *cur_ifname_str = config_setting_get_string(cur_ifname);
+			assert(cur_ifname_str != NULL);
+			if (strcmp(cur_ifname_str, ifname) == 0) return cur;
+		}
+
+		config_setting_t *cur_is_default = config_setting_get_member(cur, "default");
+		if (
+			default_if_conf == NULL &&
+			cur_is_default != NULL &&
+			config_setting_get_bool(cur_is_default)
+		) {
 			default_if_conf = cur;
+		}
 	}
 	return default_if_conf;
 }
@@ -158,8 +190,12 @@ static config_setting_t *mac_array_for_if(const char *ifname) {
 	if (app_config_type == CONFIG_TYPE_ARRAY) {
 		return app_config;
 	}
-	assert(app_config_type == CONFIG_TYPE_GROUP);
-	return config_setting_get_member_exact(ifname);
+	assert(app_config_type == CONFIG_TYPE_LIST);
+	config_setting_t *ifgroup = interface_group_for(ifname);
+	if (ifgroup == NULL) return NULL;
+	config_setting_t *mac_array = config_setting_get_member(ifgroup, "mac");
+	assert(mac_array != NULL);
+	return mac_array;
 }
 
 int ioctl_get_hwaddr(int d, int request, ...) {

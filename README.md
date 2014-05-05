@@ -23,14 +23,16 @@ applications will be overridden, and then when you run macspoof, you specify
 which application is running with the `-a` flag. If you do not specify the `-a`
 flag, the application named `default_application` will be used.
 
-Each application's value must either be an array of integers or a group of
-arrays of integers whose values range from -1 to 255 (hex or decimal is
-accepted). The values declared in the array will override the returned MAC
-address. The array does not have to cover all six of the octets in a mac
-address. You can also explicitly ignore an octet by using the value -1. If you
-use a group, the group's elements should be named by the interface names you
-want to override. An interface name of `default_interface` will be used when an
-interface name is not found in the group.
+Each application's value must either be an array of integers or a list of
+groups. If a list of groups is provided, the groups must contain a `mac`
+element which is an array of integers. In either case, those integer values
+must be in the range of -1 to 255 (hex or decimal is accepted). If a list of
+groups is provided, you must additionally provide exactly one of `default` or
+`interface`. `interface` specifies the exact interface to override. `default`
+specifies that all not otherwise specified interfaces will be overridden.  The
+values declared in the `mac` array will override the returned MAC address. The
+array does not have to cover all six of the octets in a mac address. You can
+also explicitly ignore an octet by using the value -1.
 
 By default, the application will look for a config file in `~/.macspoofrc` and
 `/etc/macspoof.conf`. You can override this behavior with the `-f` or the `-c`
