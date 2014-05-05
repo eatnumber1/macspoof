@@ -2,10 +2,15 @@
 LD_PRELOAD="@MACSPOOF_LIB@"
 export LD_PRELOAD
 
+function usage {
+	echo "Usage: $0 [-h] [-a application] [-c config] [-f config_file] program arguments"
+	echo "Additional help information at https://github.com/eatnumber1/macspoof"
+}
+
 while getopts "ha:c:f:" arg; do
 	case $arg in
 		h)
-			echo "Usage: $0 [-h] [-a application] [-c config] [-f config_file] program arguments"
+			usage
 			exit 0
 			;;
 		a)
@@ -20,5 +25,10 @@ while getopts "ha:c:f:" arg; do
 	esac
 done
 shift $((OPTIND - 1))
+
+if [[ $# -eq 0 ]]; then
+	usage >&2
+	exit 1
+fi
 
 exec "$@"
