@@ -31,7 +31,7 @@ __attribute__((noreturn)) static void perror_die(const char *s) {
 	die("%s: %s\n", s, msg);
 }
 
-__attribute__((constructor)) static void setup_real_ioctl() {
+__attribute__((constructor)) static void setup_real_ioctl(void) {
 	dlerror();
 	real_ioctl = dlsym(RTLD_NEXT, "ioctl");
 	char *error = dlerror();
@@ -73,7 +73,7 @@ static FILE *open_config_file(char **filename) {
 	return file;
 }
 
-static void read_config() {
+static void read_config(void) {
 	char *filename = NULL;
 	FILE *file = open_config_file(&filename);
 
@@ -127,7 +127,7 @@ static void typecheck_config_ifgrouplist(config_setting_t *list) {
 	}
 }
 
-static void read_app_config() {
+static void read_app_config(void) {
 	char *app_name = getenv("MACSPOOF_APPLICATION");
 	if (app_name == NULL) app_name = DEFAULT_APPLICATION_NAME;
 
@@ -148,14 +148,14 @@ static void read_app_config() {
 
 }
 
-__attribute__((constructor)) static void setup_config() {
+__attribute__((constructor)) static void setup_config(void) {
 	config = &config_real;
 	config_init(config);
 	read_config();
 	read_app_config();
 }
 
-__attribute__((destructor)) static void destroy_config() {
+__attribute__((destructor)) static void destroy_config(void) {
 	if (config != NULL) config_destroy(config);
 }
 

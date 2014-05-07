@@ -39,7 +39,7 @@ static void cleanup_tempfile(void *namevoid) {
 	free(name);
 }
 
-static void cleanup_tempfiles() {
+static void cleanup_tempfiles(void) {
 	g_slist_free_full(tempfiles, cleanup_tempfile);
 }
 
@@ -62,7 +62,7 @@ static char *mkconfig(const char *fmt, ...) {
 	return name;
 }
 
-static int open_socket() {
+static int open_socket(void) {
 	int sock;
 	if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
 		perror("socket");
@@ -71,7 +71,7 @@ static int open_socket() {
 	return sock;
 }
 
-static void *load_macspoof() {
+static void *load_macspoof(void) {
 	void *handle = dlopen("./libmacspoof.so", RTLD_LAZY);
 	if (handle == NULL) die("%s\n", dlerror());
 	return handle;
@@ -160,7 +160,7 @@ static void assert_cmpary(int *expected, char *actual, size_t n) {
 	}
 }
 
-static void test_simple_array_config_default_application() {
+static void test_simple_array_config_default_application(void) {
 	int test_mac[] = { 0xde, 0xad, 0xbe, 0xef, 0xde, 0xad };
 	size_t test_mac_len = sizeof(test_mac) / sizeof(int);
 	char *config = mkconfig_from_array(NULL, test_mac, test_mac_len);
@@ -176,7 +176,7 @@ static void test_simple_array_config_default_application() {
 	assert_cmpary(test_mac, mac, test_mac_len);
 }
 
-static void test_simple_array_config_specific_application() {
+static void test_simple_array_config_specific_application(void) {
 	int test_mac[] = { 0xde, 0xad, 0xbe, 0xef, 0xde, 0xad };
 	size_t test_mac_len = sizeof(test_mac) / sizeof(int);
 	const char *application = "some_application";
@@ -194,7 +194,7 @@ static void test_simple_array_config_specific_application() {
 	assert_cmpary(test_mac, mac, test_mac_len);
 }
 
-static void test_simple_array_config_partial_mac_prefix() {
+static void test_simple_array_config_partial_mac_prefix(void) {
 	int test_mac[] = { 0xde, 0xad, 0xbe, 0xef };
 	size_t test_mac_len = sizeof(test_mac) / sizeof(int);
 
@@ -211,7 +211,7 @@ static void test_simple_array_config_partial_mac_prefix() {
 	assert_cmpary(test_mac, mac, test_mac_len);
 }
 
-static void test_simple_array_config_partial_mac_suffix() {
+static void test_simple_array_config_partial_mac_suffix(void) {
 	int test_mac[] = { -1, -1, 0xde, 0xad, 0xbe, 0xef };
 	size_t test_mac_len = sizeof(test_mac) / sizeof(int);
 
@@ -228,7 +228,7 @@ static void test_simple_array_config_partial_mac_suffix() {
 	assert_cmpary(test_mac, mac, test_mac_len);
 }
 
-static void test_group_config() {
+static void test_group_config(void) {
 	int test_mac[] = { 0xaa, 0xbb };
 	size_t test_mac_len = sizeof(test_mac) / sizeof(int);
 	char *config = mkconfig("default_application: ( { default: true; mac: [0xaa, 0xbb]; } );");
