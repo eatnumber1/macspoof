@@ -17,7 +17,7 @@
 #define DEFAULT_INTERFACE_NAME "default_interface"
 #define DEFAULT_APPLICATION_NAME "default_application"
 
-int (*real_ioctl)(int d, int request, ...);
+static int (*real_ioctl)(int d, int request, ...);
 
 __attribute__((noreturn)) static void die(const char *fmt, ...) {
 	va_list ap;
@@ -200,7 +200,7 @@ static config_setting_t *mac_array_for_if(const char *ifname) {
 	return mac_array;
 }
 
-int ioctl_get_hwaddr(int d, int request, ...) {
+static int ioctl_get_hwaddr(int d, int request, ...) {
 	assert(request == SIOCGIFHWADDR);
 
 	va_list ap;
@@ -223,7 +223,7 @@ int ioctl_get_hwaddr(int d, int request, ...) {
 	return ret;
 }
 
-int ioctl_error(int d, int request, ...) {
+static int ioctl_error(int d, int request, ...) {
 	(void) d, (void) request;
 	return -1;
 }
