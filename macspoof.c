@@ -14,7 +14,6 @@
 
 #include <libconfig.h>
 
-#define DEFAULT_INTERFACE_NAME "default_interface"
 #define DEFAULT_APPLICATION_NAME "default_application"
 
 static int (*real_ioctl)(int d, int request, ...);
