@@ -223,15 +223,16 @@ int ioctl_get_hwaddr(int d, int request, ...) {
 	return ret;
 }
 
+int ioctl_error(int d, int request, ...) {
+	(void) d, (void) request;
+	return -1;
+}
+
 void *ioctl_resolver(int d, int request) {
 	int type;
 	socklen_t optlen = sizeof(int);
-	if (
-		getsockopt(d, SOL_SOCKET, SO_TYPE, &type, &optlen) == -1 &&
-		errno == ENOTSOCK
-	) {
-		return real_ioctl;
-	}
+	if (getsockopt(d, SOL_SOCKET, SO_TYPE, &type, &optlen) == -1)
+		return errno == ENOTSOCK ? real_ioctl : ioctl_error;
 
 	return request == SIOCGIFHWADDR ? ioctl_get_hwaddr : real_ioctl;
 }
