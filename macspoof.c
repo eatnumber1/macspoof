@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 
 #include <libconfig.h>
 
@@ -222,6 +224,14 @@ int ioctl_get_hwaddr(int d, int request, ...) {
 }
 
 void *ioctl_resolver(int d, int request) {
-	(void) d;
+	int type;
+	socklen_t optlen = sizeof(int);
+	if (
+		getsockopt(d, SOL_SOCKET, SO_TYPE, &type, &optlen) == -1 &&
+		errno == ENOTSOCK
+	) {
+		return real_ioctl;
+	}
+
 	return request == SIOCGIFHWADDR ? ioctl_get_hwaddr : real_ioctl;
 }
