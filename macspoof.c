@@ -24,20 +24,21 @@ __attribute__((noreturn)) static void die(const char *fmt, ...) {
 	va_start(ap, fmt);
 	fprintf(stderr, "macspoof: ");
 	vfprintf(stderr, fmt, ap);
+	fprintf(stderr, "\n");
 	va_end(ap);
 	exit(EXIT_FAILURE);
 }
 
 __attribute__((noreturn)) static void perror_die(const char *s) {
 	char *msg = strerror(errno);
-	die("%s: %s\n", s, msg);
+	die("%s: %s", s, msg);
 }
 
 __attribute__((constructor)) static void setup_real_ioctl(void) {
 	dlerror();
 	real_ioctl = dlsym(RTLD_NEXT, "ioctl");
 	char *error = dlerror();
-	if (error != NULL) die("%s\n", error);
+	if (error != NULL) die("%s", error);
 }
 
 static config_t config_real;
@@ -70,7 +71,7 @@ static FILE *open_config_file(char **filename) {
 	file = fopen(*filename, "r");
 	if (file == NULL) {
 		perror("fopen");
-		die("macspoof: Cannot open any config file.\n");
+		die("Cannot open any config file.");
 	}
 	return file;
 }
@@ -80,7 +81,7 @@ static void read_config(void) {
 	FILE *file = open_config_file(&filename);
 
 	if (config_read(config, file) != CONFIG_TRUE)
-		die("%s:%d %s\n", filename, config_error_line(config), config_error_text(config));
+		die("%s:%d %s", filename, config_error_line(config), config_error_text(config));
 
 	if (fclose(file) == EOF) perror_die("fclose");
 }
@@ -88,12 +89,12 @@ static void read_config(void) {
 static void typecheck_config_array(config_setting_t *array) {
 	assert(config_setting_is_array(array));
 	int length = config_setting_length(array);
-	if (length > 6) die("Arrays must be fewer than seven elements.\n");
+	if (length > 6) die("Arrays must be fewer than seven elements.");
 	for (int i = 0; i < length; i++) {
 		config_setting_t *elem = config_setting_get_elem(array, i);
 		int val = config_setting_get_int(elem);
 		if (config_setting_type(elem) != CONFIG_TYPE_INT || val > 0xFF || val < -1) {
-			die("Arrays must only contain numbers in the range -1 to 0xFF.\n");
+			die("Arrays must only contain numbers in the range -1 to 0xFF.");
 		}
 	}
 }
@@ -105,17 +106,17 @@ static void typecheck_config_ifgroup(config_setting_t *ifgroup) {
 	config_setting_t *interface = config_setting_get_member(ifgroup, "interface");
 
 	if (dflt == NULL && interface == NULL)
-		die("Interface group must contain either \"default\" or \"interface\" elements.\n");
+		die("Interface group must contain either \"default\" or \"interface\" elements.");
 	if (dflt != NULL && interface != NULL)
-		die("Interface group must contain only one of \"default\" and \"interface\" elements.\n");
+		die("Interface group must contain only one of \"default\" and \"interface\" elements.");
 	if (mac == NULL)
-		die("Interface group must contain a \"mac\" element.\n");
+		die("Interface group must contain a \"mac\" element.");
 	if (dflt != NULL && config_setting_type(dflt) != CONFIG_TYPE_BOOL)
-		die("Interface group element \"default\" must be a bool.\n");
+		die("Interface group element \"default\" must be a bool.");
 	if (interface != NULL && config_setting_type(interface) != CONFIG_TYPE_STRING)
-		die("Interface group element \"interface\" must be a string.\n");
+		die("Interface group element \"interface\" must be a string.");
 	if (!config_setting_is_array(mac))
-		die("Interface group element \"mac\" must be an array.\n");
+		die("Interface group element \"mac\" must be an array.");
 	typecheck_config_array(mac);
 }
 
@@ -124,7 +125,7 @@ static void typecheck_config_ifgrouplist(config_setting_t *list) {
 	for (int i = 0; i < config_setting_length(list); i++) {
 		config_setting_t *ifgroup = config_setting_get_elem(list, i);
 		if (!config_setting_is_group(ifgroup))
-			die("Interface group lists must only contain groups.\n");
+			die("Interface group lists must only contain groups.");
 		typecheck_config_ifgroup(ifgroup);
 	}
 }
@@ -136,7 +137,7 @@ static void read_app_config(void) {
 	config_setting_t *root = config_root_setting(config);
 	assert(root != NULL);
 	app_config = config_setting_get_member(root, app_name);
-	if (app_config == NULL) die("Application \"%s\" not found.\n", app_name);
+	if (app_config == NULL) die("Application \"%s\" not found.", app_name);
 	switch(config_setting_type(app_config)) {
 		case CONFIG_TYPE_ARRAY:
 			typecheck_config_array(app_config);
@@ -145,7 +146,7 @@ static void read_app_config(void) {
 			typecheck_config_ifgrouplist(app_config);
 			break;
 		default:
-			die("Config for application \"%s\" must be an array or group.\n", app_name);
+			die("Config for application \"%s\" must be an array or group.", app_name);
 	}
 
 }
