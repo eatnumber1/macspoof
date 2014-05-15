@@ -230,10 +230,12 @@ static int ioctl_error(int d, int request, ...) {
 }
 
 void *ioctl_resolver(int d, int request) {
+	if (request != SIOCGIFHWADDR) return real_ioctl;
+
 	int type;
 	socklen_t optlen = sizeof(int);
 	if (getsockopt(d, SOL_SOCKET, SO_TYPE, &type, &optlen) == -1)
 		return errno == ENOTSOCK ? real_ioctl : ioctl_error;
 
-	return request == SIOCGIFHWADDR ? ioctl_get_hwaddr : real_ioctl;
+	return ioctl_get_hwaddr;
 }
